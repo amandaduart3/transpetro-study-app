@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transpetro Study App</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- TELA INICIAL -->
+        <div id="home-screen" class="screen active">
+            <header class="header">
+                <h1>Transpetro <span>Processos de Negócios</span></h1>
+                <p>Estudo ativo direto no celular</p>
+            </header>
+            
+            <div class="menu-buttons">
+                <button class="btn primary" onclick="app.showScreen('flashcard-screen')">
+                    📚 Flashcards
+                </button>
+                
+                <div class="quiz-section">
+                    <select id="topic-select" class="topic-filter">
+                        <option value="todos">Todos os Tópicos</option>
+                        <option value="Arquitetura de Dados">Arquitetura de Dados</option>
+                        <option value="Gerenciamento de Projetos">Gerenciamento de Projetos</option>
+                        <option value="Engenharia de Software">Engenharia de Software</option>
+                        <option value="Segurança da Informação">Segurança da Informação</option>
+                        <option value="Análise de Dados e BI">Análise de Dados e BI</option>
+                    </select>
+                    <button class="btn primary full-width" onclick="app.startQuiz('normal')">
+                        📝 Simulado (Por Tópico)
+                    </button>
+                    <button class="btn danger outline full-width" onclick="app.startQuiz('erros')">
+                        🔄 Refazer Caderno de Erros
+                    </button>
+                </div>
+
+                <div class="stats-section">
+                    <button class="btn secondary" onclick="app.showScreen('bookmarks-screen')">
+                        ✍️ Passar a Limpo <span id="bookmark-badge" class="badge-count">0</span>
+                    </button>
+                    <button class="btn secondary" onclick="app.showScreen('history-screen')">
+                        📊 Meu Histórico
+                    </button>
+                </div>
+                
+                <button class="btn outline" onclick="app.openSettings()">
+                    ⚙️ Configurar Chave Gemini
+                </button>
+            </div>
+        </div>
+
+        <!-- TELA DE FLASHCARDS -->
+        <div id="flashcard-screen" class="screen">
+            <div class="screen-header">
+                <button class="btn-back" onclick="app.showScreen('home-screen')">← Voltar</button>
+                <h2>Flashcards</h2>
+            </div>
+            
+            <div class="flashcard-container" onclick="app.flipCard()">
+                <div class="flashcard-inner" id="flashcard-inner">
+                    <div class="flashcard-front">
+                        <span class="badge" id="fc-topic">Tópico</span>
+                        <p id="fc-question">Carregando flashcards...</p>
+                        <small class="hint">Toque para ver a resposta</small>
+                    </div>
+                    <div class="flashcard-back">
+                        <span class="badge">Resposta</span>
+                        <p id="fc-answer">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-controls">
+                <button class="btn" onclick="app.prevFlashcard()">Anterior</button>
+                <span id="fc-counter">1 / 1</span>
+                <button class="btn" onclick="app.nextFlashcard()">Próximo</button>
+            </div>
+        </div>
+
+        <!-- TELA DE QUIZ -->
+        <div id="quiz-screen" class="screen">
+            <div class="screen-header">
+                <button class="btn-back" onclick="app.showScreen('home-screen')">← Sair</button>
+                <h2>Simulado</h2>
+                <div class="quiz-header-actions">
+                    <span id="quiz-counter">Q 1/1</span>
+                    <button id="btn-bookmark" class="btn-bookmark" onclick="app.toggleBookmark()" title="Marcar para Passar a Limpo">☆</button>
+                </div>
+            </div>
+
+            <div class="quiz-card">
+                <span class="badge" id="q-topic">Tópico</span>
+                <p id="q-text" class="question-text">Carregando questão...</p>
+                <div id="options-container" class="options-list"></div>
+            </div>
+
+            <div id="feedback-section" class="feedback-section hidden">
+                <p id="feedback-msg"></p>
+                <button id="btn-gemini" class="btn gemini-btn hidden" onclick="app.askGemini()">
+                    ✨ Por que errei? (Gemini)
+                </button>
+                <button class="btn primary" onclick="app.nextQuestion()">Próxima Questão →</button>
+            </div>
+        </div>
+
+        <!-- TELA DE PASSAR A LIMPO -->
+        <div id="bookmarks-screen" class="screen">
+            <div class="screen-header">
+                <button class="btn-back" onclick="app.showScreen('home-screen')">← Voltar</button>
+                <h2>Passar a Limpo</h2>
+            </div>
+            <p class="subtitle">Questões marcadas para você copiar à mão e memorizar.</p>
+            
+            <div id="bookmarks-list" class="list-container">
+                <!-- Injetado via JS -->
+            </div>
+        </div>
+
+        <!-- TELA DE HISTÓRICO -->
+        <div id="history-screen" class="screen">
+            <div class="screen-header">
+                <button class="btn-back" onclick="app.showScreen('home-screen')">← Voltar</button>
+                <h2>Histórico de Desempenho</h2>
+            </div>
+
+            <div id="history-list" class="list-container">
+                <!-- Injetado via JS -->
+            </div>
+            <button class="btn outline danger" onclick="app.clearHistory()">Limpar Histórico</button>
+        </div>
+
+        <!-- MODAL DO GEMINI -->
+        <div id="gemini-modal" class="modal hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>💡 Explicação do Gemini</h3>
+                    <button onclick="app.closeGeminiModal()">✕</button>
+                </div>
+                <div id="gemini-response" class="modal-body">
+                    Analisando sua resposta...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
