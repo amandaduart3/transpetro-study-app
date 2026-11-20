@@ -59,7 +59,7 @@ class StudyApp {
 
     async loadQuestionsFromJson() {
         try {
-            const response = await fetch('transpetro_questoes_completas.json');
+            const response = await fetch('questoes_transpetro_completo.json');
             quizData = await response.json();
             this.updateHomeBadges();
             console.log(`${quizData.length} questões carregadas com sucesso!`);
